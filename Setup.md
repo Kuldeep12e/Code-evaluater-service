@@ -28,3 +28,5 @@ Note : Make relevant config changes in tsconfig.js
   },
 
 ```
+
+npm run dev
