@@ -1,9 +1,10 @@
 import express from "express";
 import  {addSubmission}  from "../../controllers/submissionContoroller";
+import { validate} from "../../validators/zodValidator";
+import { createSubmissionZodSchema } from "../../dtos/CreateSubmissionDto";
 
 const submissionRouter = express.Router();
 
-// ✅ Correct usage
-submissionRouter.post("/", addSubmission);
+submissionRouter.post("/",validate(createSubmissionZodSchema), addSubmission);
 
 export default submissionRouter;
