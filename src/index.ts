@@ -4,6 +4,8 @@ import bullBoardAdapter from "./config/bullboardConfig";
 import v1Router from "./routes";
 import bodyParser from "body-parser"
 import runPython from "./containers/runPythonDocker";
+import runJava from "./containers/runJavaDocker";
+import runCpp from "./containers/runC++Container";
 
 const app = express()
 app.use(bodyParser.urlencoded());
@@ -13,15 +15,20 @@ app.use(bodyParser.text())
 app.use('/ui', bullBoardAdapter.getRouter());
 app.use('/api/v1' , v1Router);
 
-app.listen(serverConfig.PORT, async () => {
+app.listen(3000, () => {
   console.log("Server started at 3000");
-
-  const code = `
-x = int(input())
-print(x)
+const cppCode = `
+#include <iostream>
+using namespace std;
+int main() {
+    int x;
+    cin >> x;
+    cout << x * 3 << endl;
+    return 0;
+}
 `;
 
-  const result = await runPython(code, "100");
-  console.log("Result:", result);
+runCpp(cppCode, "5");
+
 });
 

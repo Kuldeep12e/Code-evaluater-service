@@ -1,7 +1,6 @@
 import createContainer from './containerFactory';
-import { PYTHON_IMAGE } from '../utills/constants';
+import { JAVA_IMAGE } from '../utills/constants';
 import decodeDockerStream from './dockerHelper';
-
 
 function escapeForShell(str: string): string {
   return str
@@ -9,26 +8,26 @@ function escapeForShell(str: string): string {
     .replace(/"/g, '\\"')
     .replace(/\$/g, '\\$')
     .replace(/`/g, '\\`')
-    .replace(/\n/g, '\\n'); 
+    .replace(/\n/g, '\\n');
 }
 
-// regex -> 
-
-async function runPython(code: string, safeInput: string) {
-  console.log("Initializing the Docker container...");
+async function runJava(code: string, safeInput: string) {
+  console.log("Initializing the Docker container for Java...");
 
   const escapedCode = escapeForShell(code);
 
-    const command = [
-      "/bin/sh",
-      "-c",
-      `printf "%s" '${code}' > test.py && printf "%s" "${safeInput}" | python3 test.py`,
-    ];
+  // Create, compile, and run Main.java inside the container
+            const command = [
+            "/bin/sh",
+            "-c",
+            `printf "%b" "${code}" > Main.java && javac Main.java && printf "%s" "${safeInput}" | java Main`,
+            ];
 
-  const container = await createContainer(PYTHON_IMAGE, command);
+
+  const container = await createContainer(JAVA_IMAGE, command);
 
   await container.start();
-  console.log("Started the Docker container");
+  console.log("Started the Java Docker container");
 
   const loggerStream = await container.logs({
     follow: true,
@@ -47,8 +46,10 @@ async function runPython(code: string, safeInput: string) {
 
   console.log("Decoded Stream:", decodedStream);
 
+  // Clean up container after execution
   await container.remove({ force: true });
+
   return decodedStream;
 }
 
-export default runPython;
+export default runJava;
