@@ -1,6 +1,7 @@
 import createContainer from './containerFactory';
 import { PYTHON_IMAGE } from '../utills/constants';
 import decodeDockerStream from './dockerHelper';
+import pullImage from './pullImage';
 
 
 function escapeForShell(str: string): string {
@@ -24,6 +25,8 @@ async function runPython(code: string, safeInput: string) {
       "-c",
       `printf "%s" '${code}' > test.py && printf "%s" "${safeInput}" | python3 test.py`,
     ];
+
+    await pullImage(PYTHON_IMAGE)
 
   const container = await createContainer(PYTHON_IMAGE, command);
 

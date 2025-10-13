@@ -1,6 +1,7 @@
 import createContainer from './containerFactory';
 import { JAVA_IMAGE } from '../utills/constants';
 import decodeDockerStream from './dockerHelper';
+import pullImage from './pullImage';
 
 function escapeForShell(str: string): string {
   return str
@@ -22,7 +23,7 @@ async function runJava(code: string, safeInput: string) {
             "-c",
             `printf "%b" "${code}" > Main.java && javac Main.java && printf "%s" "${safeInput}" | java Main`,
             ];
-
+ await pullImage(JAVA_IMAGE)
 
   const container = await createContainer(JAVA_IMAGE, command);
 

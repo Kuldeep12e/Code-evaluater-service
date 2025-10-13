@@ -1,6 +1,7 @@
 import createContainer from './containerFactory';
 import { CPP_IMAGE } from '../utills/constants';
 import decodeDockerStream from './dockerHelper';
+import pullImage from './pullImage';
 
 function escapeForShell(str: string): string {
   return str
@@ -22,6 +23,8 @@ async function runCpp(code: string, safeInput: string) {
     "-c",
     `printf "%b" "${escapedCode}" > main.cpp && g++ main.cpp -o main && printf "%s" "${safeInput}" | ./main`,
   ];
+
+  await pullImage(CPP_IMAGE);
 
   const container = await createContainer(CPP_IMAGE, command);
 
